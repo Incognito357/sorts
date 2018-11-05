@@ -7,7 +7,7 @@ import java.util.List;
 
 public class BubbleSort implements Sort {
     private final List<Integer> unsorted;
-    private final List<Integer> array;
+    private final List<Integer> array = new ArrayList<>();
     private final int maxVal;
     private int i = 0;
     private int j = 0;
@@ -25,7 +25,6 @@ public class BubbleSort implements Sort {
 
     public BubbleSort(List<Integer> array) {
         unsorted = array;
-        this.array = new ArrayList<>();
         this.array.addAll(array);
         maxVal = array.stream().mapToInt(v -> v).max().getAsInt();
     }

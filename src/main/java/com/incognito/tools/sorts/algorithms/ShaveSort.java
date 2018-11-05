@@ -9,10 +9,11 @@ import java.util.function.Consumer;
 
 public class ShaveSort implements Sort {
     private final List<Integer> unsorted;
-    private final List<Integer> array;
+    private final List<Integer> array = new ArrayList<>();
     private final int maxVal;
     private int i = 0;
     private int j = 0;
+    private int k = 0;
     private int stepCount = 0;
     private State state = State.SHAVE_NEXT;
     private final List<Integer> sorted = new ArrayList<>();
@@ -26,7 +27,6 @@ public class ShaveSort implements Sort {
 
     public ShaveSort(List<Integer> array) {
         unsorted = array;
-        this.array = new ArrayList<>();
         this.array.addAll(array);
         maxVal = array.stream().mapToInt(v -> v).max().getAsInt();
         sorted.addAll(Collections.nCopies(array.size(), 0));
@@ -44,6 +44,8 @@ public class ShaveSort implements Sort {
                 graphics.setColor(Color.GREEN);
             } else if (x == j){
                 graphics.setColor(Color.MAGENTA);
+            } else if (x < k) {
+                graphics.setColor(Color.GREEN);
             } else {
                 graphics.setColor(Color.PINK);
             }
@@ -111,6 +113,7 @@ public class ShaveSort implements Sort {
                     state = State.DONE;
                 } else {
                     i = 0;
+                    k = j;
                     j = array.size();
                     state = State.SHAVE;
                 }
@@ -130,6 +133,7 @@ public class ShaveSort implements Sort {
     public void reset() {
         i = 0;
         j = 0;
+        k = 0;
         stepCount = 0;
         state = State.SHAVE_NEXT;
         array.clear();

@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class QuickSort implements Sort {
     private final List<Integer> unsorted;
-    private final List<Integer> array;
+    private final List<Integer> array = new ArrayList<>();
     private final int maxVal;
     private int stepCount = 0;
     private int compareCount = 0;
@@ -24,10 +24,10 @@ public class QuickSort implements Sort {
     private int i = 0;
     private final Deque<Map.Entry<Integer, Integer>> stack = new ArrayDeque<>();
     private State state = State.NEXT_STACK;
+    private static final Object LOCK = new Object();
 
     public QuickSort(List<Integer> array) {
         unsorted = array;
-        this.array = new ArrayList<>();
         this.array.addAll(array);
         maxVal = array.stream().mapToInt(v -> v).max().getAsInt();
     }
@@ -67,7 +67,14 @@ public class QuickSort implements Sort {
             } else if (x >= partitionStart && x <= partitionEnd) {
                 graphics.setColor(Color.MAGENTA);
             } else {
-                graphics.setColor(Color.BLUE);
+                int thisX = x;
+                synchronized(LOCK) {
+                    if (stack.parallelStream().anyMatch(pair -> thisX >= pair.getKey() && thisX <= pair.getValue())) {
+                        graphics.setColor(Color.BLUE);
+                    } else {
+                        graphics.setColor(Color.GREEN);
+                    }
+                }
             }
             int y = array.get(x) * barScale;
             graphics.fillRect(x * barWidth, height - y, barWidth, y);
@@ -97,9 +104,11 @@ public class QuickSort implements Sort {
                 if (stack.isEmpty()){
                     state = State.DONE;
                 } else {
-                    Map.Entry<Integer, Integer> indicies = stack.pop();
-                    partitionStart = indicies.getKey();
-                    partitionEnd = indicies.getValue();
+                    synchronized(LOCK) {
+                        Map.Entry<Integer, Integer> indicies = stack.pop();
+                        partitionStart = indicies.getKey();
+                        partitionEnd = indicies.getValue();
+                    }
                     partitionIndex = partitionStart;
                     if (partitionEnd - partitionStart >= 3) {
                         pivot = (int)((partitionStart + partitionEnd) / 2.0 + 0.5);
@@ -153,10 +162,14 @@ public class QuickSort implements Sort {
                 break;
             case ADD_STACK:
                 if (partitionIndex - 1 > partitionStart){
-                    stack.push(new AbstractMap.SimpleEntry<>(partitionStart, partitionIndex - 1));
+                    synchronized(LOCK) {
+                        stack.push(new AbstractMap.SimpleEntry<>(partitionStart, partitionIndex - 1));
+                    }
                 }
                 if (partitionIndex + 1 < partitionEnd){
-                    stack.push(new AbstractMap.SimpleEntry<>(partitionIndex + 1, partitionEnd));
+                    synchronized(LOCK) {
+                        stack.push(new AbstractMap.SimpleEntry<>(partitionIndex + 1, partitionEnd));
+                    }
                 }
                 state = State.NEXT_STACK;
                 break;

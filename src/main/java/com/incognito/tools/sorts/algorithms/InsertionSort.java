@@ -5,13 +5,12 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectionSort implements Sort {
+public class InsertionSort implements Sort {
     private final List<Integer> unsorted;
     private final List<Integer> array = new ArrayList<>();
     private final int maxVal;
-    private int i = 0;
+    private int i = 1;
     private int j = 1;
-    private int min = 0;
     private int stepCount = 0;
     private int swapCount = 0;
     private int compareCount = 0;
@@ -20,11 +19,12 @@ public class SelectionSort implements Sort {
     private enum State {
         COMPARE,
         SWAP,
-        NEXT,
+        NEXT_I,
+        NEXT_J,
         DONE
     }
 
-    public SelectionSort(List<Integer> array) {
+    public InsertionSort(List<Integer> array) {
         unsorted = array;
         this.array.addAll(array);
         maxVal = array.stream().mapToInt(v -> v).max().getAsInt();
@@ -40,14 +40,10 @@ public class SelectionSort implements Sort {
         for (int x = 0; x < array.size(); x++){
             if (state == State.DONE){
                 graphics.setColor(Color.GREEN);
-            } else if (x == min) {
-                graphics.setColor(state == State.SWAP ? Color.RED : Color.CYAN);
             } else if (x == i){
-                graphics.setColor(Color.RED);
-            } else if (x == j) {
                 graphics.setColor(Color.YELLOW);
-            } else if (x < i) {
-                graphics.setColor(Color.GREEN);
+            } else if (x == j){
+                graphics.setColor(Color.CYAN);
             } else {
                 graphics.setColor(Color.BLUE);
             }
@@ -70,31 +66,33 @@ public class SelectionSort implements Sort {
         stepCount++;
         switch(state){
             case COMPARE:
-                if (array.get(j) < array.get(min)){
-                    min = j;
+                if (array.get(i) < array.get(i - 1)){
+                    state = State.SWAP;
                 } else {
-                    state = State.NEXT;
+                    state = State.NEXT_J;
                 }
                 compareCount++;
                 break;
             case SWAP:
-                int t = array.get(i);
-                array.set(i, array.get(min));
-                array.set(min, t);
-                state = State.NEXT;
+                int t = array.get(i - 1);
+                array.set(i - 1, array.get(i));
+                array.set(i, t);
+                state = State.NEXT_I;
                 swapCount++;
                 break;
-            case NEXT:
+            case NEXT_I:
+                i--;
+                if (i <= 0){
+                    state = State.NEXT_J;
+                } else {
+                    state = State.COMPARE;
+                }
+                break;
+            case NEXT_J:
                 j++;
-                if (j == array.size()){
-                    state = State.SWAP;
-                } else if (j > array.size()){
-                    i++;
-                    if (i == array.size() - 1){
-                        state = State.DONE;
-                    }
-                    min = i;
-                    j = i + 1;
+                i = j;
+                if (j >= array.size()){
+                    state = State.DONE;
                 } else {
                     state = State.COMPARE;
                 }
@@ -112,9 +110,8 @@ public class SelectionSort implements Sort {
 
     @Override
     public void reset() {
-        i = 0;
+        i = 1;
         j = 1;
-        min = 0;
         stepCount = 0;
         swapCount = 0;
         compareCount = 0;
@@ -130,6 +127,6 @@ public class SelectionSort implements Sort {
 
     @Override
     public String getName() {
-        return "Selection Sort";
+        return "Insertion Sort";
     }
 }

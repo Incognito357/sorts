@@ -7,7 +7,7 @@ import java.util.List;
 
 public class MergeSort implements Sort {
     private final List<Integer> unsorted;
-    private final List<Integer> array;
+    private final List<Integer> array = new ArrayList<>();
     private final int maxVal;
     private int curSize = 1;
     private int left = 0;
@@ -23,7 +23,6 @@ public class MergeSort implements Sort {
 
     public MergeSort(List<Integer> array) {
         unsorted = array;
-        this.array = new ArrayList<>();
         this.array.addAll(array);
         maxVal = array.stream().mapToInt(v -> v).max().getAsInt();
     }

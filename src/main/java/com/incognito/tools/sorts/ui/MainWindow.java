@@ -1,6 +1,7 @@
 package com.incognito.tools.sorts.ui;
 
 import com.incognito.tools.sorts.algorithms.BubbleSort;
+import com.incognito.tools.sorts.algorithms.InsertionSort;
 import com.incognito.tools.sorts.algorithms.MergeSort;
 import com.incognito.tools.sorts.algorithms.QuickSort;
 import com.incognito.tools.sorts.algorithms.SelectionSort;
@@ -40,10 +41,11 @@ public class MainWindow {
     private JSpinner numSpeed;
 
     private Thread auto;
-    private static final List<Integer> ints = new Random().ints(1800, 1, 30).boxed().collect(Collectors.toList());
+    private static final List<Integer> ints = new Random().ints(1800, 1, 1100).boxed().collect(Collectors.toList());
     private static final List<Sort> sorts = Arrays.asList(
             new BubbleSort(ints),
             new SelectionSort(ints),
+            new InsertionSort(ints),
             new MergeSort(ints),
             new QuickSort(ints),
             new ShaveSort(ints)

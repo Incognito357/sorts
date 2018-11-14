@@ -27,7 +27,6 @@ public class TimSort implements Sort {
     private final List<Integer> array = new ArrayList<>();
     private final int maxVal;
     private int stepCount = 0;
-    private int swapCount = 0;
     private int compareCount = 0;
     private int minGallop = MIN_GALLOP;
     private int mainHi = 0;
@@ -80,7 +79,7 @@ public class TimSort implements Sort {
     private boolean normal = true;
     private boolean finalMerge = false;
     private boolean mergingLo = true;
-    private State callReturn = State.GALLOP_LEFT_INIT;
+    private State callReturn = null;
     private final ArrayList<Pair> stack = new ArrayList<>();
 
     private class Pair {
@@ -284,7 +283,6 @@ public class TimSort implements Sort {
                 }
                 break;
             case REVERSE_STEP:
-                swapCount++;
                 int tmp = array.get(reverseLo);
                 array.set(reverseLo++, array.get(reverseHi));
                 array.set(reverseHi--, tmp);
@@ -1045,7 +1043,61 @@ public class TimSort implements Sort {
         state = State.INIT;
         array.clear();
         array.addAll(unsorted);
+        stepCount = 0;
+        compareCount = 0;
+        minGallop = MIN_GALLOP;
+        mainHi = 0;
+        mainLo = 0;
+        mainNumRemaining = 0;
+        mainMinRunLen = 0;
+        mainRunLen = 0;
+        mainForce = 0;
+        countRunHi = 0;
+        reverseLo = 0;
+        reverseHi = 0;
+        minRunR = 0;
+        minRunN = 0;
+        binLo = 0;
+        binHi = 0;
+        binStart = 0;
+        binPivot = 0;
+        binLeft = 0;
+        binRight = 0;
+        binMid = 0;
+        binN = 0;
+        mergeN = 0;
+        mergeI = 0;
+        mergeBase1 = 0;
+        mergeLen1 = 0;
+        mergeBase2 = 0;
+        mergeLen2 = 0;
+        gallopArray = null;
+        gallopKey = 0;
+        gallopBase = 0;
+        gallopLen = 0;
+        gallopHint = 0;
+        gallopOfs = 1;
+        gallopLastOfs = 0;
+        gallopMaxOfs = 0;
+        gallopM = 0;
+        mergeTempArray.clear();
+        mergeFakeCopy.clear();
+        mergeCopySrcI = 0;
+        mergeCopyDestI = 0;
+        mergeCopyLen = 0;
+        mergeCopySrc = null;
+        mergeCopyDest = null;
+        mergeCursor1 = 0;
+        mergeCursor2 = 0;
+        mergeDest = 0;
+        mergeCount1 = 0;
+        mergeCount2 = 0;
+        state = State.INIT;
         normal = true;
+        finalMerge = false;
+        mergingLo = true;
+        callReturn = null;
+        stack.clear();
     }
 
     @Override

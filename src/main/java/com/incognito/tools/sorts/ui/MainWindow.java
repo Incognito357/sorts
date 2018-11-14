@@ -7,6 +7,7 @@ import com.incognito.tools.sorts.algorithms.QuickSort;
 import com.incognito.tools.sorts.algorithms.SelectionSort;
 import com.incognito.tools.sorts.algorithms.ShaveSort;
 import com.incognito.tools.sorts.algorithms.Sort;
+import com.incognito.tools.sorts.algorithms.TimSort;
 import com.incognito.tools.sorts.ui.components.GraphicsPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -48,7 +49,8 @@ public class MainWindow {
             new InsertionSort(ints),
             new MergeSort(ints),
             new QuickSort(ints),
-            new ShaveSort(ints)
+            new ShaveSort(ints),
+            new TimSort(ints)
     );
 
     public MainWindow() {

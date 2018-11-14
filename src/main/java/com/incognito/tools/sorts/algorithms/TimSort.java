@@ -429,12 +429,12 @@ public class TimSort implements Sort {
                 gallopBase = mergeBase1;
                 gallopLen = mergeLen1;
                 gallopHint = 0;
-                gallopOfs = 1;
-                gallopLastOfs = 0;
                 callReturn = State.MERGE_AT_INIT;
                 state = State.GALLOP_RIGHT_INIT;
                 break;
             case GALLOP_RIGHT_INIT:
+                gallopOfs = 1;
+                gallopLastOfs = 0;
                 compareCount++;
                 if (gallopKey < gallopArray.get(gallopBase + gallopHint)){
                     gallopMaxOfs = gallopHint + 1;
@@ -487,8 +487,6 @@ public class TimSort implements Sort {
                             gallopBase = mergeBase2;
                             gallopLen = mergeLen2;
                             gallopHint = mergeLen2 - 1;
-                            gallopOfs = 1;
-                            gallopLastOfs = 0;
                             state = State.GALLOP_LEFT_INIT;
                         }
                     } else if (callReturn == State.MERGE_LO_INNER_2_STEP){
@@ -538,6 +536,8 @@ public class TimSort implements Sort {
                 state = State.GALLOP_RIGHT_3_NEXT;
                 break;
             case GALLOP_LEFT_INIT:
+                gallopOfs = 1;
+                gallopLastOfs = 0;
                 compareCount++;
                 if (gallopKey > gallopArray.get(gallopBase + gallopHint)){
                     gallopMaxOfs = gallopLen - gallopHint;

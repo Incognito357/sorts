@@ -22,6 +22,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -40,7 +41,7 @@ public class MainWindow {
     private JButton btnPlay;
     private JSpinner numSpeed;
 
-    private Thread auto;
+    private SwingWorker<Boolean, Void> auto;
     private static final List<Integer> ints = new Random().ints(1800, 1, 1100).boxed().collect(Collectors.toList());
     private static final List<Sort> sorts = Arrays.asList(
             new BubbleSort(ints),
@@ -72,30 +73,41 @@ public class MainWindow {
                 pnlGraphics.setPlaying(false);
                 btnPlay.setText("Play");
                 cmbAlgorithm.setEnabled(true);
-                auto.interrupt();
+                auto.cancel(true);
             } else {
                 pnlGraphics.setPlaying(true);
                 btnPlay.setText("Pause");
                 cmbAlgorithm.setEnabled(false);
-                auto = new Thread(() -> {
-                    while (!pnlGraphics.getSort().isDone()) {
-                        if (Thread.interrupted()) {
-                            Thread.currentThread().interrupt();
-                            return;
-                        }
-                        try {
-                            Thread.sleep((Integer) numSpeed.getValue());
+                auto = new SwingWorker<Boolean, Void>(){
+                    @Override
+                    protected void done() {
+                        btnPlay.setText(isCancelled() ? "Resume": "Reset");
+                        cmbAlgorithm.setEnabled(true);
+                        pnlGraphics.setPlaying(false);
+                    }
+
+                    @Override
+                    protected Boolean doInBackground() throws Exception {
+                        while (!pnlGraphics.getSort().isDone()) {
+                            if (Thread.currentThread().isInterrupted()) {
+                                Thread.currentThread().interrupt();
+                                return false;
+                            }
+                            int delay = (Integer) numSpeed.getValue();
+                            long wait = System.nanoTime() + (delay * 10000);
+                            while (wait > System.nanoTime()){
+                                if (Thread.currentThread().isInterrupted()){
+                                    Thread.currentThread().interrupt();
+                                    return false;
+                                }
+                            }
                             pnlGraphics.getSort().stepNext();
                             pnlGraphics.repaint();
-                        } catch (InterruptedException e1) {
-                            Thread.currentThread().interrupt();
                         }
+                        return true;
                     }
-                    btnPlay.setText("Reset");
-                    cmbAlgorithm.setEnabled(true);
-                    pnlGraphics.setPlaying(false);
-                });
-                auto.start();
+                };
+                auto.execute();
             }
         });
         cmbAlgorithm.addItemListener(e -> {
@@ -125,7 +137,7 @@ public class MainWindow {
         pnlGraphics = new GraphicsPanel();
         pnlGraphics.setSort(sorts.get(0));
 
-        numSpeed = new JSpinner(new SpinnerNumberModel(50, 0, 1000, 1));
+        numSpeed = new JSpinner(new SpinnerNumberModel(250, 0, 100000, 1));
     }
 
     /**
